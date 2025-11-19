@@ -1,0 +1,12 @@
+#+TITLE:     1doc - Robust Documentation Model example implementation
+#+AUTHOR:    Watkinsong
+#+KEYWORDS:  software, documentation, engineering
+#+LANGUAGE:  en
+#+OPTIONS:   H:5 num:nil toc:2 p:t
+#+OPTIONS:   ^:nil
+#+PROPERTY:  header-args :eval never-export
+#+PROPERTY: CLOCK_INTO_DRAWER nil
+
+This is an example implementation for the Robust Documentation Model as an OpenAPI specification. The model was proposed in the master's thesis *Software Knowledge: Robust Documentation Model in Quantified Informationspace.*
+
+Specification file: [[./1doc.yaml][1doc.yaml]]

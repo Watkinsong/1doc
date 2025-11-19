@@ -1,0 +1,1250 @@
+openapi: 3.0.4
+info:
+  title: 1Doc - The Robust Documentation Model implementation
+  description: '# Description
+
+    This is is a proof of concept implementation of the Robust Documentation Model,
+    introduced in the master''s thesis
+
+    ''Software Knowledge: Robust Documentation Model in Quantified Informationspace''.
+
+
+    # Example use case with corresponding operations
+
+    1. Create new layer: `CreateANewLayer`
+
+    2. Place a docubus in the new layer: `CreateADocubus`
+
+    3. Place a document in the docubus: `CreateADocument`
+
+    4. Transform the size or position of the docubus: `TransformADocubus`
+
+    5. Fetch documents of the docubus: `GetContainerDocuments`
+
+    6. Edit a document: `EditADocument`
+
+    7. Search for documents: `SearchForDocumentsUsingASearchFilter`
+
+    8. Proceed the clock: `ProceedTheClock`
+
+
+    # Supplemental features
+
+    The API contains features not present in the Robust Documentation Model:
+
+    - user management
+
+    - annotation of docubi
+
+    - list of documents assigned for a user (the review list)
+
+    - reacting to documents with emojis
+
+    - accountability mechanism through review actions
+
+
+    # Review actions
+
+    Requesting another user for a review can be done with one of the following actions:
+
+    - **Accept:** "Do you accept my changes?"
+
+    - **Endorse:** "Do you agree with my changes?"
+
+    '
+  contact:
+    email: TODO@example.com
+  license:
+    name: Apache 2.0
+    url: https://www.apache.org/licenses/LICENSE-2.0.html
+  version: 1.0.0
+externalDocs:
+  description: 'Master''s Thesis that introduced the Robust Documentation Model: ''Software
+    Knowledge: Robust Documentation Model in Quantified Informationspace'''
+  url: https://www.example.com/TODO
+tags:
+- name: layer
+  description: Creating and viewing layers.
+- name: tick
+  description: Viewing and manipulating current time.
+- name: docubus
+  description: Creating, editing and searching of docubi.
+- name: document
+  description: Creating, editing and searching of documents.
+- name: comment
+  description: Creating, editing and viewing comments.
+- name: reaction
+  description: Reacting to documents.
+- name: action
+  description: Creating, editing and completing actions.
+- name: user
+  description: User management.
+paths:
+  /tick:
+    post:
+      tags:
+      - tick
+      summary: Proceed the clock.
+      description: Proceed the clock by commiting current versions of docubi and documents.
+      operationId: ProceedTheClock
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Tick'
+      requestBody:
+        $ref: '#/components/requestBodies/TickRequest'
+  /tick/{tick-id}/container/{container-id}/docubus/{docubus-id}:
+    get:
+      tags:
+      - docubus
+      summary: Get information about a docubus within a container.
+      description: Get information about a docubus within a container.
+      operationId: GetInformationAboutADocubusWithinAContainer
+      responses:
+        '200':
+          description: Docubus dimensions and/or location changed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Docubus'
+        '404':
+          description: No such docubus.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: tick-id
+        in: path
+        description: Tick ID
+        required: true
+        schema:
+          type: string
+      - description: ID of a container.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: container-id
+        required: true
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+  /tick/{tick-id}/layer/{layer-id}:
+    get:
+      tags:
+      - layer
+      summary: Get layer information.
+      description: Get layer information.
+      operationId: GetLayerInformation
+      responses:
+        '200':
+          description: Layer was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Layer'
+        '404':
+          description: No such layer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: tick-id
+        in: path
+        description: Tick ID
+        required: true
+        schema:
+          type: string
+      - description: ID of a layer.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: layer-id
+        required: true
+  /layer:
+    post:
+      tags:
+      - layer
+      summary: Create a new layer.
+      description: Create a new layer on top of the model.
+      operationId: CreateANewLayer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Layer'
+      requestBody:
+        $ref: '#/components/requestBodies/CreateLayer'
+  /tick/{tick-id}/docubus/{docubus-id}:
+    get:
+      tags:
+      - docubus
+      summary: Get information about a docubus without layer details.
+      description: Get information about a docubus without layer details.
+      operationId: GetInformationAboutADocubusWithoutLayerDetails
+      responses:
+        '200':
+          description: Docubus was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Docubus'
+        '404':
+          description: No such docubus.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: tick-id
+        in: path
+        description: Tick ID
+        required: true
+        schema:
+          type: string
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+  /docubus/{docubus-id}:
+    put:
+      tags:
+      - docubus
+      summary: Edit details of a docubus.
+      description: Edit details of a docubus.
+      operationId: EditDetailsOfADocubus
+      responses:
+        '200':
+          description: Details of a docubus were updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Docubus'
+        '404':
+          description: No such docubus.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/EditDocubus'
+      parameters:
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+  /container/{container-id}/docubus/:
+    post:
+      tags:
+      - docubus
+      summary: Create a docubus.
+      description: Create a new docubus in a the container of choice.
+      operationId: CreateADocubus
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Docubus'
+        '404':
+          description: No such layer.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/CreateDocubus'
+      parameters:
+      - description: ID of a container.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: container-id
+        required: true
+  /container/{container-id}/docubus/{docubus-id}:
+    patch:
+      tags:
+      - docubus
+      summary: Transform a docubus.
+      description: Endpoint for both stretching and shrinking of docubi and moving
+        them around.
+      operationId: TransformADocubus
+      responses:
+        '200':
+          description: Docubus dimensions and/or location changed.
+        '403':
+          description: There is not enough room in the container for the requested
+            transformations.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: No such layer or docubus.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/TransformDocubus'
+      parameters:
+      - description: ID of a container.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: container-id
+        required: true
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+  /docubus/{docubus-id}/link:
+    post:
+      tags:
+      - docubus
+      summary: Link a docubus with another one from a different layer.
+      description: Link a docubus with another one from a different layer.
+      operationId: LinkADocubusWithAnotherOneFromADifferentLayer
+      responses:
+        '200':
+          description: Docubi were linked.
+        '404':
+          description: No such docubus.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/LinkDocubus'
+      parameters:
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+  /docubus/{docubus-id}/note:
+    post:
+      tags:
+      - docubus
+      summary: Add a note to a docubus.
+      description: Add a note to a docubus.
+      operationId: AddANoteToADocubus
+      responses:
+        '200':
+          description: Note was added to a docubus.
+        '404':
+          description: No such docubus.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/AnnotateDocubus'
+      parameters:
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+  /docubus/{docubus-id}/note/{note-id}:
+    delete:
+      tags:
+      - docubus
+      summary: Delete a docubus note.
+      description: Delete a docubus note.
+      operationId: DeleteADocubusNote
+      responses:
+        '200':
+          description: Note was deleted.
+        '404':
+          description: No such docubus or note.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a docubus.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: docubus-id
+        required: true
+      - description: ID of a note.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: note-id
+        required: true
+  /document/{document-id}/reaction:
+    post:
+      tags:
+      - document
+      - reaction
+      summary: React to a document.
+      description: React to a document.
+      operationId: ReactToADocument
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Reaction'
+      requestBody:
+        $ref: '#/components/requestBodies/ReactToDocument'
+      parameters:
+      - description: ID of a document.
+        schema:
+          type: string
+        in: path
+        name: document-id
+        required: true
+  /document/{document-id}/reaction/{reaction-id}:
+    delete:
+      tags:
+      - document
+      - reaction
+      summary: Delete a reaction from a document.
+      description: Delete a reaction from a document.
+      operationId: DeleteAReactionFromADocument
+      responses:
+        '200':
+          description: Reaction was deleted.
+        '404':
+          description: No such document or reaction.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a document.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: document-id
+        required: true
+      - description: ID of a reaction.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: reaction-id
+        required: true
+  /document/{document-id}/edit:
+    post:
+      tags:
+      - document
+      summary: Add an edit request to a document.
+      description: Add an edit request to a document.
+      operationId: AddAnEditRequestToADocument
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Edit'
+        '404':
+          description: No such document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: The document in question has changed since your version.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/EditRequest'
+      parameters:
+      - description: ID of a document.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: document-id
+        required: true
+  /tick/{tick-id}/document/{document-id}/edit/{edit-id}:
+    get:
+      tags:
+      - document
+      summary: Get information about an edit request that was made.
+      description: Get information about an edit request that was made.
+      operationId: GetInformationAboutAnEditRequestThatWasMade
+      responses:
+        '200':
+          description: Edit request was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Edit'
+        '404':
+          description: No such document or edit.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: tick-id
+        in: path
+        description: Tick ID
+        required: true
+        schema:
+          type: string
+      - description: ID of a document.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: document-id
+        required: true
+      - description: ID of an edit request.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: edit-id
+        required: true
+  /tick/{tick-id}/document:
+    get:
+      tags:
+      - document
+      summary: Search for documents using a search filter.
+      description: Search for documents using a search filter.
+      operationId: SearchForDocumentsUsingASearchFilter
+      responses:
+        '200':
+          description: Specified tick was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentList'
+        '404':
+          description: No such tick.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - name: tick-id
+        in: path
+        description: Tick ID
+        required: true
+        schema:
+          type: string
+  /document/{document-id}/comment:
+    post:
+      tags:
+      - document
+      - comment
+      summary: Add a comment to a document.
+      description: Add a comment to a document.
+      operationId: AddACommentToADocument
+      responses:
+        '200':
+          description: Comment was added to a document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: No such document.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/CommentDocument'
+      parameters:
+      - description: ID of a document.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: document-id
+        required: true
+  /document/{document-id}/comment/{comment-id}:
+    delete:
+      tags:
+      - document
+      - comment
+      summary: Delete a document comment.
+      description: Delete a document comment.
+      operationId: DeleteADocumentComment
+      responses:
+        '200':
+          description: Comment was deleted.
+        '404':
+          description: No such document or comment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a document.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: document-id
+        required: true
+      - description: ID of a comment.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: comment-id
+        required: true
+    put:
+      tags:
+      - document
+      - comment
+      summary: Mark comment as being addressed.
+      description: Mark comment as being addressed.
+      operationId: MarkCommentAsBeingAddressed
+      responses:
+        '200':
+          description: Comment was marked as addressed.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Comment'
+        '404':
+          description: No such document or comment.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a document.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: document-id
+        required: true
+      - description: ID of a comment.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: comment-id
+        required: true
+  /user/{user-id}/action:
+    post:
+      tags:
+      - action
+      summary: Create an action to a user.
+      description: Create an action to a user.
+      operationId: CreateAnActionToAUser
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+        '404':
+          description: No such user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/CreateAction'
+      parameters:
+      - description: ID of a user.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: user-id
+        required: true
+    get:
+      tags:
+      - user
+      - action
+      summary: Get the actions assigned to a user (the review list).
+      description: Get the actions assigned to a user (the review list).
+      operationId: GetTheActionsAssignedToAUser(TheReviewList)
+      responses:
+        '200':
+          description: User was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActionList'
+        '404':
+          description: No such user.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a user.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: user-id
+        required: true
+  /user/{user-id}/action/{action-id}:
+    get:
+      tags:
+      - action
+      summary: Get information about an action assigned to a user.
+      description: Get information about an action assigned to a user.
+      operationId: GetInformationAboutAnActionAssignedToAUser
+      responses:
+        '200':
+          description: Action was found.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+        '404':
+          description: No such user or action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a user.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: user-id
+        required: true
+      - description: ID of an action.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: action-id
+        required: true
+    put:
+      tags:
+      - action
+      summary: Update status of an action.
+      description: Update status of an action.
+      operationId: UpdateStatusOfAnAction
+      responses:
+        '200':
+          description: Action status was updated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Action'
+        '404':
+          description: No such user or action.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/UpdateAction'
+      parameters:
+      - description: ID of a user.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: user-id
+        required: true
+      - description: ID of an action.
+        schema:
+          type: integer
+          format: int32
+        in: path
+        name: action-id
+        required: true
+  /container/{container-id}/document:
+    post:
+      tags:
+      - document
+      summary: Create a document.
+      description: Create a new document and place it inside a container.
+      operationId: CreateADocument
+      responses:
+        '200':
+          description: Document was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: No such container.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/CreateDocument'
+      parameters:
+      - description: ID of a container.
+        schema:
+          type: string
+        in: path
+        name: container-id
+        required: true
+    get:
+      tags:
+      - document
+      summary: Get container documents.
+      description: Get documents from the selected container.
+      operationId: GetContainerDocuments
+      responses:
+        '200':
+          description: Document was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DocumentList'
+        '404':
+          description: No such container.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+      - description: ID of a container.
+        schema:
+          type: string
+        in: path
+        name: container-id
+        required: true
+  /tick/{tick-id}/document/{document-id}/:
+    put:
+      tags:
+      - document
+      summary: Edit a document.
+      description: Create a new document and place it inside a container.
+      operationId: EditADocument
+      responses:
+        '200':
+          description: Document was created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Document'
+        '404':
+          description: No such container.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        $ref: '#/components/requestBodies/CreateDocument'
+      parameters:
+      - name: tick-id
+        in: path
+        description: Tick ID
+        required: true
+        schema:
+          type: string
+      - description: ID of a document.
+        schema:
+          type: string
+        in: path
+        name: document-id
+        required: true
+components:
+  requestBodies:
+    TickRequest:
+      description: Proceed the clock.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              comment:
+                type: string
+                example: Manual tick
+    DocumentSearchFilter:
+      description: Search filter for searching documents
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              docubusID:
+                type: string
+    CreateAction:
+      description: Request action to a document.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              action:
+                type: string
+                enum:
+                - accept
+                - endorse
+    CreateLayer:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Layer'
+    EditDocubus:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Docubus'
+    TransformDocubus:
+      description: Transform docubus in three dimensions by changing its size and
+        position.
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              Y1:
+                type: integer
+                format: int32
+    EditRequest:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Edit'
+    ReactToDocument:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Reaction'
+    LinkDocubus:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Docubus'
+    CreateDocubus:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Docubus'
+    CommentDocument:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Comment'
+    AnnotateDocubus:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Note'
+    UpdateAction:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Action'
+    CreateDocument:
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Document'
+  schemas:
+    Tick:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        created:
+          type: string
+          format: date-time
+        creatorUserId:
+          type: integer
+          format: int32
+      xml:
+        name: category
+    User:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        email:
+          type: string
+          example: donald.duck@example.com
+        firstName:
+          type: string
+          example: Donald
+        lastName:
+          type: string
+          example: Duck
+        userStatus:
+          type: integer
+          format: int32
+          example: 1
+          description: '0: disabled
+
+            1: active'
+      xml:
+        name: category
+    Layer:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: Frontend
+        docubi:
+          type: array
+          items:
+            $ref: '#/components/schemas/Docubus'
+      xml:
+        name: category
+      required:
+      - id
+      - name
+      - docubi
+    Docubus:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+          example: PLATFORM
+        ParentDocubusId:
+          type: string
+        BelowDocubusId:
+          type: string
+        layerID:
+          type: string
+        width:
+          type: integer
+          format: int32
+        height:
+          type: integer
+          format: int32
+        depth:
+          type: integer
+          format: int32
+        X1:
+          type: integer
+          format: int32
+        Y1:
+          type: integer
+          format: int32
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+      xml:
+        name: category
+      required:
+      - ID
+      - name
+      - layerID
+      - width
+      - height
+      - depth
+      - X1
+      - Y1
+      - documents
+    DocubusList:
+      type: object
+      properties:
+        docubi:
+          type: array
+          items:
+            $ref: '#/components/schemas/Docubus'
+      xml:
+        name: category
+      required:
+      - docubi
+    Document:
+      type: object
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+          example: HOWTO change your password
+        body:
+          type: string
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        previousEditorUserId:
+          type: string
+        precedingDocumentId:
+          type: string
+        succeedingDocumentId:
+          type: string
+        assigneeUserId:
+          type: string
+      xml:
+        name: category
+      required:
+      - title
+      - body
+      - created
+      - modified
+    DocumentList:
+      type: object
+      properties:
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/Document'
+      xml:
+        name: category
+      required:
+      - documents
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+        subject:
+          type: string
+          example: Improve outline of document.
+        created:
+          type: string
+          format: date-time
+        modified:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum:
+          - pending
+          - done
+        request:
+          type: string
+          enum:
+          - Accept
+          - Endorse
+      xml:
+        name: category
+      required:
+      - id
+      - subject
+      - created
+      - modified
+    ActionList:
+      type: object
+      properties:
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/Action'
+      xml:
+        name: category
+      required:
+      - actions
+    Error:
+      type: object
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+      xml:
+        name: category
+      required:
+      - code
+      - message
+    Reaction:
+      type: object
+      properties:
+        id:
+          type: string
+        emoji:
+          type: string
+      xml:
+        name: category
+      required:
+      - emoji
+    Comment:
+      type: object
+      properties:
+        id:
+          type: string
+        message:
+          type: string
+      xml:
+        name: category
+      required:
+      - id
+      - message
+    Edit:
+      type: object
+      properties:
+        id:
+          type: string
+        changes:
+          type: string
+      xml:
+        name: category
+      required:
+      - id
+      - changes
+    Note:
+      type: object
+      properties:
+        id:
+          type: string
+        docubusId:
+          type: string
+        message:
+          type: string
+      xml:
+        name: category
+      required:
+      - id
+      - docubusId
+      - message
+  securitySchemes:
+    petstore_auth:
+      type: oauth2
+      flows:
+        implicit:
+          authorizationUrl: https://petstore3.swagger.io/oauth/authorize
+          scopes:
+            write:pets: modify pets in your account
+            read:pets: read your pets
+    api_key:
+      type: apiKey
+      name: api_key
+      in: header
