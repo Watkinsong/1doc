@@ -7,6 +7,6 @@
 #+PROPERTY:  header-args :eval never-export
 #+PROPERTY: CLOCK_INTO_DRAWER nil
 
-This is an example implementation for the Robust Documentation Model as an OpenAPI specification. The model was proposed in the master's thesis *Software Knowledge: Robust Documentation Model in Quantified Informationspace.*
+This is an example implementation for the Robust Documentation Model as an OpenAPI specification. The model was proposed in the master's thesis *[[https://urn.fi/URN:NBN:fi:amk-2025112529807][Software Knowledge: Robust Documentation Model in Quantified Informationspace.]]*
 
 Specification file: [[./1doc.yaml][1doc.yaml]]
